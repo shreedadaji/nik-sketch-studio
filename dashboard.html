@@ -1,0 +1,198 @@
+<!DOCTYPE html><html>
+<head>
+<title>Nik Sketch Studio Dashboard</title><style>
+
+body{
+font-family:Arial;
+background:#f5f5f5;
+margin:0;
+padding:30px;
+}
+
+.header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:20px;
+}
+
+.stats{
+background:black;
+color:white;
+padding:10px 20px;
+border-radius:8px;
+}
+
+.search{
+padding:10px;
+width:250px;
+border-radius:6px;
+border:1px solid #ccc;
+}
+
+#orders{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+gap:20px;
+}
+
+.card{
+background:white;
+border-radius:12px;
+box-shadow:0 5px 15px rgba(0,0,0,0.2);
+padding:20px;
+}
+
+.card img{
+width:100%;
+border-radius:10px;
+margin-top:10px;
+}
+
+.delete-btn{
+background:#ff4d4d;
+color:white;
+border:none;
+padding:10px 15px;
+margin-top:10px;
+cursor:pointer;
+border-radius:6px;
+}
+
+.status{
+margin-top:10px;
+padding:8px;
+border-radius:6px;
+}
+
+#chart{
+margin-top:40px;
+background:white;
+padding:20px;
+border-radius:10px;
+box-shadow:0 0 10px gray;
+}
+
+</style></head><body><div class="header"><h1>📦 Orders Dashboard</h1><div class="stats">
+Total Orders: <span id="count"></span>
+</div></div><input type="text" id="search" class="search" placeholder="Search Customer"><br><br>
+
+<div id="orders"></div><canvas id="chart" width="400" height="150"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script><script>
+
+var orders=JSON.parse(localStorage.getItem("orders"))||[];
+
+document.getElementById("count").innerText=orders.length;
+
+var container=document.getElementById("orders");
+
+function showOrders(list){
+
+container.innerHTML="";
+
+list.forEach(function(order){
+
+var realIndex=orders.indexOf(order);
+
+if(!order.status){
+order.status="Pending";
+}
+
+if(!order.date){
+order.date=new Date().toLocaleDateString();
+}
+
+var div=document.createElement("div");
+
+div.className="card";
+
+div.innerHTML=
+"<h3>"+order.name+"</h3>"
++"<p>📞 "+order.phone+"</p>"
++"<p>🖌 "+order.details+"</p>"
++"<p>📅 "+order.date+"</p>"
++"<img src='"+order.image+"'>"
++"<br>"
++"Status: <select class='status' onchange='updateStatus("+realIndex+", this.value)'>"
++"<option "+(order.status=="Pending"?"selected":"")+">Pending</option>"
++"<option "+(order.status=="Completed"?"selected":"")+">Completed</option>"
++"<option "+(order.status=="Delivered"?"selected":"")+">Delivered</option>"
++"</select>"
++"<br>"
++"<button class='delete-btn' onclick='deleteOrder("+realIndex+")'>Delete</button>";
+
+container.appendChild(div);
+
+});
+
+}
+
+showOrders(orders);
+
+document.getElementById("search").addEventListener("keyup",function(){
+
+var value=this.value.toLowerCase();
+
+var filtered=orders.filter(function(order){
+
+return order.name.toLowerCase().includes(value);
+
+});
+
+showOrders(filtered);
+
+});
+
+function deleteOrder(index){
+
+orders.splice(index,1);
+
+localStorage.setItem("orders",JSON.stringify(orders));
+
+location.reload();
+
+}
+
+function updateStatus(index,status){
+
+orders[index].status=status;
+
+localStorage.setItem("orders",JSON.stringify(orders));
+
+}
+
+if(orders.length>0){
+
+alert("📢 New Order Received!");
+
+}
+
+var dates={};
+
+orders.forEach(function(order){
+
+dates[order.date]=(dates[order.date]||0)+1;
+
+});
+
+var labels=Object.keys(dates);
+
+var data=Object.values(dates);
+
+new Chart(document.getElementById("chart"),{
+
+type:"bar",
+
+data:{
+labels:labels,
+datasets:[{
+label:"Daily Orders",
+data:data
+}]
+}
+
+});
+
+</script></body>
+</html>

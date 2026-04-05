@@ -1,0 +1,59 @@
+<!DOCTYPE html><html>
+<head>
+<title>Nik Sketch Studio Admin</title><style>
+
+body{
+font-family:Arial;
+background:linear-gradient(120deg,#fdfbfb,#ebedee);
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+}
+
+.login-box{
+background:white;
+padding:40px;
+border-radius:10px;
+box-shadow:0 0 15px gray;
+text-align:center;
+}
+
+.login-box input{
+padding:10px;
+margin:10px;
+width:200px;
+}
+
+.login-box button{
+padding:10px 20px;
+background:black;
+color:white;
+border:none;
+cursor:pointer;
+}
+
+</style></head><body><div class="login-box"><h2>Admin Login</h2><input type="password" id="password" placeholder="Enter Password"><br><button onclick="login()">Login</button>
+
+</div><script>
+
+function login(){
+
+var pass=document.getElementById("password").value;
+
+if(pass=="eva"){
+
+window.location="dashboard.html";
+
+}
+
+else{
+
+alert("Wrong Password");
+
+}
+
+}
+
+</script></body>
+</html>
